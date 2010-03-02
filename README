@@ -1,3 +1,7 @@
+Duplicate join model record when saving has_many :through in rails 2.3.5
+
+Example:
+
 >> a = App.new(:name => "new app")
 => #<App id: nil, name: "new app", created_at: nil, updated_at: nil>
 >> a.developers.build(:name => "new dev")
@@ -8,3 +12,23 @@
 => 2
 >> App.last.developers
 => [#<Developer id: 2, name: "new dev", created_at: "2010-03-01 10:57:29", updated_at: "2010-03-01 10:57:29">, #<Developer id: 2, name: "new dev", created_at: "2010-03-01 10:57:29", updated_at: "2010-03-01 10:57:29">]
+
+Solved in 2-3-stable branch, as per this commit http://github.com/rails/rails/commit/146a7505680cbb646c0b9d55dca7cc8494b36e47
+
+Example after extend active_records:
+
+>> a = App.new(:name => "new app")
+=> #<App id: nil, name: "new app", created_at: nil, updated_at: nil>
+>> a.developers.build(:name => "new dev")
+=> #<Developer id: nil, name: "new dev", created_at: nil, updated_at: nil>
+>> a.save
+=> true
+>> App.last.developers.count
+=> 1
+>> App.last.developers
+=> [#<Developer id: 2, name: "new dev", created_at: "2010-03-02 04:28:53", updated_at: "2010-03-02 04:28:53">]
+
+No test included, this repo is just for learning purposes
+
+Cheers!
+Arzumy
